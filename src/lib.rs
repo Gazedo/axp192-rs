@@ -1,3 +1,4 @@
+mod axp192_registers;
 use std::convert::TryInto;
 
 use crate::axp192_registers::{IoCtl, Registers};
