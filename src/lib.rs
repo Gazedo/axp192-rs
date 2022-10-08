@@ -523,19 +523,41 @@ fn look_up(val: f32) -> u8 {
     if val < BATTERY_LEVEL_DIS[100] {
         return 0;
     }
-    for i in 2..101 {
-        if BATTERY_LEVEL_DIS[i - 1] < val && BATTERY_LEVEL_DIS[i] > val {
-            return (101 - i).try_into().unwrap();
+    for i in 1..101 {
+        if BATTERY_LEVEL_DIS[i - 1] > val && BATTERY_LEVEL_DIS[i] < val {
+            return (100 - i).try_into().unwrap();
         }
     }
-    0
+    panic!("Didn't find value");
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::look_up;
+
     #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+    fn bat_look_up_100() {
+        let bat_soc = look_up(4.5);
+        assert_eq!(100, bat_soc);
+    }
+    #[test]
+    fn bat_look_up_10() {
+        let bat_soc = look_up(3.640);
+        assert_eq!(10, bat_soc);
+    }
+    #[test]
+    fn bat_look_up_99() {
+        let bat_soc = look_up(4.15);
+        assert_eq!(99, bat_soc);
+    }
+    #[test]
+    fn bat_look_up_1() {
+        let bat_soc = look_up(3.3750);
+        assert_eq!(0, bat_soc);
+    }
+    #[test]
+    fn bat_look_up_0() {
+        let bat_soc = look_up(3.2);
+        assert_eq!(0, bat_soc);
     }
 }

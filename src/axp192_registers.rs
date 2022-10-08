@@ -131,3 +131,16 @@ pub enum IoCtl {
 // errt read(const t *axp, uint8t reg, void *buffer),
 // errt write(const t *axp, uint8t reg, const uint8t *buffer),
 // errt ioctl(const t *axp, int command, ...),
+#[cfg(test)]
+mod tests {
+
+    use crate::Registers;
+
+    #[test]
+    fn check_into() {
+        let t1: u8 = Registers::ChargeStatus.into();
+        println!("Reg is {:?}", t1);
+        let t2: &u8 = &Registers::BatteryVoltage.into();
+        println!("Reg is {:?}", t2);
+    }
+}
