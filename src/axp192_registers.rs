@@ -112,25 +112,6 @@ pub enum IoCtl {
     CoulombCounterClear = 0xa0,
 }
 
-// typedef struct {
-//     uint8t command,
-//     uint8t data[2],
-//     uint8t count,
-// } initcommandt,
-
-// /* These should be provided by the HAL. */
-// typedef struct {
-//     int32t (* read)(void *handle, uint8t address, uint8t reg, uint8t *buffer, uint16t size),
-//     int32t (* write)(void *handle, uint8t address, uint8t reg, const uint8t *buffer, uint16t size),
-//     void *handle,
-// } t,
-
-// typedef int32t errt,
-
-// errt init(const t *axp),
-// errt read(const t *axp, uint8t reg, void *buffer),
-// errt write(const t *axp, uint8t reg, const uint8t *buffer),
-// errt ioctl(const t *axp, int command, ...),
 #[cfg(test)]
 mod tests {
 
@@ -139,8 +120,8 @@ mod tests {
     #[test]
     fn check_into() {
         let t1: u8 = Registers::ChargeStatus.into();
-        println!("Reg is {:?}", t1);
+        assert_eq!(0x01, t1);
         let t2: &u8 = &Registers::BatteryVoltage.into();
-        println!("Reg is {:?}", t2);
+        assert_eq!(&0x78, t2);
     }
 }

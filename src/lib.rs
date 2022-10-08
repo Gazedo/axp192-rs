@@ -1,3 +1,16 @@
+#![no_std]
+// We always pull in `std` during tests, because it's just easier
+// to write tests when you can assume you're on a capable platform
+#[cfg(any(feature = "std", test))]
+#[macro_use]
+extern crate std;
+
+// When we're building for a no-std target, we pull in `core`, but alias
+// it as `std` so the `use` statements are the same between `std` and `core`.
+#[cfg(all(not(feature = "std"), not(test)))]
+#[macro_use]
+extern crate core as std;
+
 mod axp192_registers;
 use core::convert::{Into, TryInto};
 use core::panic;
@@ -224,9 +237,6 @@ where
                     .unwrap();
                 self.init_gpio(GpioPin::Gpio0, GpioMode::Floating);
             }
-            _ => {
-                panic!("Not implemented yet")
-            }
         };
     }
     fn init_gpio_34(&mut self, gpio_num: GpioPin, mode: GpioMode) {
@@ -447,44 +457,6 @@ where
     }
     pub fn set_lcd_rst(&mut self, state: bool) {
         self.set_gpio_state(GpioPin::Gpio4, state)
-    }
-    fn enable_coulomb_counter(&mut self, state: bool) {
-        match state {
-            true => self.i2c.write(
-                self.addr,
-                &[
-                    Registers::CoulombCounterControl.into(),
-                    IoCtl::CoulombCounterEnable.into(),
-                ],
-            ),
-            false => self.i2c.write(
-                self.addr,
-                &[
-                    Registers::CoulombCounterControl.into(),
-                    IoCtl::CoulombCounterDisable.into(),
-                ],
-            ),
-        }
-        .expect("Failed to enable the coulomb counter");
-    }
-    fn get_coulomb_counter(&mut self) -> f32 {
-        let mut buf_in = [0; 4];
-        let mut buf_out = [0; 4];
-        self.i2c
-            .write_read(self.addr, &[Registers::ChargeCoulomb.into()], &mut buf_in)
-            .expect("Failed to read charge coulomb");
-        self.i2c
-            .write_read(
-                self.addr,
-                &[Registers::DischargeCoulomb.into()],
-                &mut buf_out,
-            )
-            .expect("Failed to read discharge coulomb");
-
-        let coin = u32::from_be_bytes(buf_in);
-        let coout = u32::from_be_bytes(buf_out);
-        let ccc: f32 = 65536.0 * 0.5 * (coin as i32 - coout as i32) as f32 / 3600.0 / 25.0;
-        ccc
     }
     fn get_charging(&mut self) -> bool {
         let cur_state = self.get_state(Registers::PowerStatus);
