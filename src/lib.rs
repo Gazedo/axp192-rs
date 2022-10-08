@@ -1,5 +1,5 @@
 mod axp192_registers;
-use std::convert::TryInto;
+use core::convert::TryInto;
 
 use crate::axp192_registers::{IoCtl, Registers};
 use embedded_hal::blocking::delay::DelayMs;

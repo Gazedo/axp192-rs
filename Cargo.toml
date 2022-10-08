@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 embedded-hal = {version="*"}
-num_enum = {version="*"}
+num_enum = {version="*", default-features=false}
