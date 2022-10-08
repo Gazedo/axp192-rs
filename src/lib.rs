@@ -84,7 +84,7 @@ impl<I2CMaster, E> AXP192<I2CMaster>
 where
     // I2CMaster: Write + WriteRead + embedded_hal::prelude::_embedded_hal_blocking_i2c_Write>::Error: std::fmt::Debug
     I2CMaster: Write<Error = E> + WriteRead<Error = E>,
-    E: std::fmt::Debug,
+    E: core::fmt::Debug,
 {
     pub fn new<DELAY>(delay: &mut DELAY, i2c: I2CMaster) -> Self
     where
