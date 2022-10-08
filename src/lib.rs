@@ -1,9 +1,12 @@
+#![no_std]
 mod axp192_registers;
 use core::convert::TryInto;
+use core::panic;
 
 use crate::axp192_registers::{IoCtl, Registers};
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::blocking::i2c::{Write, WriteRead};
+use log::info;
 
 #[allow(unused)]
 enum GpioMode {
@@ -222,7 +225,9 @@ where
                     .unwrap();
                 self.init_gpio(GpioPin::Gpio0, GpioMode::Floating);
             }
-            _ => println!("Not implemented yet"),
+            _ => {
+                panic!("Not implemented yet")
+            }
         };
     }
     fn init_gpio_34(&mut self, gpio_num: GpioPin, mode: GpioMode) {
@@ -297,6 +302,10 @@ where
             GpioPin::Gpio3 | GpioPin::Gpio4 => Registers::Gpio43SignalStatus,
         };
         let cur_state = self.get_state(reg);
+        info!(
+            "Setting gpio {:?} to state {} with current being {:?}",
+            gpio, state, reg
+        );
         let or_val = match gpio {
             GpioPin::Gpio0 => 0x01,
             GpioPin::Gpio1 => 0x02,
@@ -434,6 +443,7 @@ where
     // ESPVoltage = 0x26,
     // LCDVoltage = 0x27,
     pub fn set_led(&mut self, state: bool) {
+        info!("Setting led to {}", state);
         self.set_gpio_state(GpioPin::Gpio1, state);
     }
     pub fn set_lcd_rst(&mut self, state: bool) {
@@ -486,7 +496,8 @@ where
         let adc_lsb: f32 = 1.1 / 1000.0;
         let mut buf = [0; 4];
         self.i2c
-            .write_read(self.addr, &[Registers::BatteryVoltage.into()], &mut buf);
+            .write_read(self.addr, &[Registers::BatteryVoltage.into()], &mut buf)
+            .unwrap();
         f32::from_be_bytes(buf) * adc_lsb
     }
 
@@ -506,6 +517,7 @@ where
 }
 
 fn look_up(val: f32) -> u8 {
+    info!("Converting {:?}v to battery soc", val);
     if val > BATTERY_LEVEL_DIS[0] {
         return 100;
     }
