@@ -1,6 +1,5 @@
-#![no_std]
 mod axp192_registers;
-use core::convert::TryInto;
+use core::convert::{Into, TryInto};
 use core::panic;
 
 use crate::axp192_registers::{IoCtl, Registers};
