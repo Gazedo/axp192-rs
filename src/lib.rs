@@ -105,6 +105,7 @@ where
     where
         DELAY: DelayMs<u16>,
     {
+        info!("Starting axp192 pmic");
         let mut axp192 = AXP192 { addr: 0x34, i2c };
 
         axp192.set_vbus_limit(false);
@@ -120,6 +121,7 @@ where
         axp192.enable_dcdc(VoltageTarget::Esp, true);
         axp192.enable_dcdc(VoltageTarget::Lcd, true);
         axp192.set_charging_current(100);
+        info!("The pmic is inited");
         // set gpio43 to (read & 0x72) | 0x84
         // set pek to 0x4c
         axp192
@@ -145,6 +147,7 @@ where
         } else {
             axp192.set_bus_power_mode(PowerMode::External)
         }
+        info!("Finished setting up pmic");
         // Finish init process
         axp192
     }
