@@ -110,17 +110,22 @@ where
         info!("Acquired i2c bus, starting init");
 
         axp192.set_vbus_limit(false);
+        info!("Init: set vbus limit");
         axp192.init_gpio(GpioPin::Gpio1, GpioMode::OpenDrainOutput);
         axp192.init_gpio(GpioPin::Gpio2, GpioMode::OpenDrainOutput);
+        info!("Init: set gpios to opendrain");
         axp192.set_rtc_chg(true);
+        info!("Init: set rtc charge to true");
         axp192.set_dcdc_voltage(VoltageTarget::Esp, 3350);
         axp192.set_dcdc_voltage(VoltageTarget::Lcd, 2800);
         axp192.set_ldo_voltage(LDOTarget::Periph, 3300);
         axp192.set_ldo_voltage(LDOTarget::Vibrate, 2000);
+        info!("Init: set voltages");
         axp192.enable_ldo(LDOTarget::Periph, true);
         axp192.enable_ldo(LDOTarget::Vibrate, false);
         axp192.enable_dcdc(VoltageTarget::Esp, true);
         axp192.enable_dcdc(VoltageTarget::Lcd, true);
+        info!("Init: enabled voltages");
         axp192.set_charging_current(100);
         info!("The pmic is inited");
         // set gpio43 to (read & 0x72) | 0x84
