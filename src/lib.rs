@@ -107,6 +107,7 @@ where
     {
         info!("Starting axp192 pmic");
         let mut axp192 = AXP192 { addr: 0x34, i2c };
+        info!("Acquired i2c bus, starting init");
 
         axp192.set_vbus_limit(false);
         axp192.init_gpio(GpioPin::Gpio1, GpioMode::OpenDrainOutput);
