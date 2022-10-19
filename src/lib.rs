@@ -473,12 +473,21 @@ where
     }
 
     fn get_bat_voltage(&mut self) -> f32 {
+        // From m5stack github
+        // float ADCLSB = 1.1 / 1000.0;
+        // uint16_t ReData = Read12Bit(0x78);
+        // return ReData * ADCLSB;
+
+        // Read12Bit reads in 2 bytes but only pays attention to the high 12
+        // Data = ((buf[0] << 4) + buf[1]);
+
         let adc_lsb: f32 = 1.1 / 1000.0;
-        let mut buf = [0; 4];
+        let mut buf = [0; 2];
         self.i2c
             .write_read(self.addr, &[Registers::BatteryVoltage.into()], &mut buf)
             .unwrap();
-        f32::from_be_bytes(buf) * adc_lsb
+        let data: u16 = (buf[0] << 4 + buf[1]).into();
+        f32::from(data) * adc_lsb
     }
 
     pub fn get_battery_percentage(&mut self) -> u8 {
