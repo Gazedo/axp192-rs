@@ -486,6 +486,7 @@ where
         self.i2c
             .write_read(self.addr, &[Registers::BatteryVoltage.into()], &mut buf)
             .unwrap();
+        log::info!("Got {:?} for batt value", buf);
         let data: u16 = u16::from(buf[0]) << 4 + u16::from(buf[1]);
         f32::from(data) * adc_lsb
     }
