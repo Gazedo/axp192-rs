@@ -487,7 +487,10 @@ where
             .write_read(self.addr, &[Registers::BatteryVoltage.into()], &mut buf)
             .unwrap();
         log::info!("Got {:?} for batt value", buf);
-        let data: u16 = u16::from(buf[0]) << 4 + u16::from(buf[1]);
+        buf[0] &= 0x3;
+        log::info!("Got {:?} after masking", buf);
+        let data = u16::from_be_bytes(buf);
+        log::info!("Got {:?} for u16 eq", data);
         f32::from(data) * adc_lsb
     }
 
